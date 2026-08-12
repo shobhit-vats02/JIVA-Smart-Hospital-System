@@ -1,0 +1,45 @@
+version: '3.8'
+
+# JIVA — full stack (MongoDB Atlas recommended for prod; this uses local mongo
+# for a self-contained single-host deployment).
+services:
+  mongo:
+    image: mongo:7
+    container_name: jiva-mongo
+    restart: unless-stopped
+    ports:
+      - '27017:27017'
+    volumes:
+      - jiva-mongo-data:/data/db
+
+  server:
+    build: ./server
+    container_name: jiva-server
+    restart: unless-stopped
+    depends_on:
+      - mongo
+    environment:
+      - PORT=4000
+      - CLIENT_URL=http://localhost:3000
+      - MONGO_URI=mongodb://mongo:27017/jiva
+      - JWT_ACCESS_SECRET=${JWT_ACCESS_SECRET:-change-me-access}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET:-change-me-refresh}
+    ports:
+      - '4000:4000'
+
+  client:
+    build:
+      context: ./client
+      args:
+        NEXT_PUBLIC_API_URL: http://localhost:4000
+    container_name: jiva-client
+    restart: unless-stopped
+    depends_on:
+      - server
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:4000
+    ports:
+      - '3000:3000'
+
+volumes:
+  jiva-mongo-data:

@@ -1,0 +1,20 @@
+{
+  "name": "jiva",
+  "version": "1.0.0",
+  "private": true,
+  "description": "JIVA - Jeevan Intelligence & Virtual Assistance | AI Powered Smart Healthcare Platform",
+  "workspaces": ["server", "client"],
+  "scripts": {
+    "setup": "npm install && npm install --prefix server && npm install --prefix client",
+    "seed": "npm --prefix server run seed",
+    "seed:reset": "npm --prefix server run seed:reset",
+    "dev:server": "npm --prefix server run dev",
+    "dev:client": "npm --prefix client run dev",
+    "dev": "concurrently -n server,client -c cyan,magenta \"npm run dev:server\" \"npm run dev:client\"",
+    "test": "cd server && node scripts/smoke-test.mjs && node scripts/smoke-test-m2.mjs && node scripts/smoke-test-m3.mjs && node scripts/smoke-test-m4.mjs && node scripts/smoke-test-m5.mjs",
+    "build": "npm --prefix client run build"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
